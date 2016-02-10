@@ -21,16 +21,17 @@ sampleFraction=Config.sampleFraction
 K_B=Config.K_B
 K_C=Config.K_C
 path=Config.path
+output_path=Config.output_path
 gradients={}
 ############################################################################################
 #                           Save Initial Results
 ############################################################################################
 print 'iteration 0'
-output_file=path+'state_output'+str(0)+'.csv'
+output_file=output_path+'state_output'+str(0)+'.csv'
 write_to_cvs(output_file,Config.state,numCommunity)
 # output_file=path+'running_avg_state_output'+str(t)+'.csv'
 # write_to_cvs(output_file,running_avg_state,numCommunity)
-output_file=path+'B_output'+str(0)+'.csv'
+output_file=output_path+'B_output'+str(0)+'.csv'
 np.savetxt(output_file, Config.B, delimiter=",")
 # output_file=path+'running_avg_B_output'+str(t)+'.csv'
 # np.savetxt(output_file, running_avg_B, delimiter=",")
@@ -38,7 +39,7 @@ np.savetxt(output_file, Config.B, delimiter=",")
 #                                   Training
 ############################################################################################
 gradient_norm=0.0
-for t in range(1,numberOfSnapshots+1):
+for t in range(2,numberOfSnapshots+1):
     # learning_rate=1.0/(np.sqrt(t))
     # learning_rate=1.0
     for iter in range(1,2):
@@ -68,8 +69,9 @@ for t in range(1,numberOfSnapshots+1):
             Config.learning_rate_C[i]=K_C/Config.visit[i]
         for i in sampleSet.nodes:
             #update state of node i based on mirror descent
-            # new_state=state_OPD+Config.learning_rate_C[i]*gradient
-            new_state=Config.state[i]-Config.learning_rate_C[i]*(Config.state[i]-state_OPD)-Config.learning_rate_C[i]*(1.0-Config.state[i])*gradients[i]
+            # new_state=state_OPD+Config.learning_rate_C[i]*gradients[i]
+            # new_state=Config.state[i]-Config.learning_rate_C[i]*(Config.state[i]-state_OPD)-Config.learning_rate_C[i]*(1.0-Config.state[i])*gradients[i]
+            new_state=Config.state[i]-Config.learning_rate_C[i]*gradients[i] # without opinion dynamics
             #project the state into the simplex
             Config.state[i]=projection_simplex(new_state, 1.0)
         ###################################################################
@@ -87,14 +89,14 @@ for t in range(1,numberOfSnapshots+1):
         Project_B()
     #########################################################################
     #*****************         Load next Graph        ***********************
-    Config.edges=Config.dataset.read_network_snapshot(t)
+    Config.edges=Config.dataset.read_network_snapshot(t,hasHeader=True)
     Config.nodes_list=Config.nodes_list.union(Config.edges.keys())
     Config.n=len(Config.edges.keys())
     #########################################################################
     #*****************          Save results          ***********************
     print 'Iteration '+str(t)
-    output_file=path+'state_output'+str(t)+'.csv'
+    output_file=output_path+'state_output'+str(t)+'K='+str(numCommunity)+'.csv'
     write_to_cvs(output_file,Config.state,numCommunity)
-    output_file=path+'B_output'+str(t)+'.csv'
+    output_file=output_path+'B_output'+str(t)+'K='+str(numCommunity)+'.csv'
     np.savetxt(output_file, Config.B, delimiter=",")
 

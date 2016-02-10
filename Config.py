@@ -1,20 +1,21 @@
 __author__ = 'saghar hosseini (saghar@uw.edu)'
 import numpy as np
 from ReadData import*
-from Projection import*
+from projection import*
 ##########################################################################################
 #                              Load Data
 ##########################################################################################
 # path="C:/Users/sagha_000/Documents/SVN/My_SVN/TimeVaryingSocialNetworks/datasets/as-733/"
-path="F:/Saghar_SVN/TimeVaryingSocialNetworks/datasets/as-733/"
+path="F:/Saghar_SVN/TimeVaryingSocialNetworks/datasets/twitter-pol-dataset/graphs/"
 dataset=ReadData(path)
-edges=dataset.read_network_snapshot(0)
+edges=dataset.read_network_snapshot(1,hasHeader=True)
 nodes_list=set(edges.keys())
+output_path='F:/Saghar_SVN/TimeVaryingSocialNetworks/datasets/twitter-pol-dataset/Results/wo_OPD/'
 ############################################################################################
 #                               Define Parameters
 ############################################################################################
-numberOfSnapshots=732
-numCommunity=30
+numberOfSnapshots=1175
+numCommunity=10
 mu=0.1
 lambdah_C=0.0
 lambdah_B=0.0
